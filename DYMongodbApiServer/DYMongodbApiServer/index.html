@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Kendo UI Web</title>
+    <link href="styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="styles/kendo.default.min.css" rel="stylesheet" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/modernizr-2.6.2.js"></script>
+    <script src="js/kendo.web.min.js"></script>
+    <script src="js/cultures/kendo.culture.zh-CN.min.js"></script>
+    <script type="text/javascript">
+        kendo.culture("zh-CN");
+    </script>
+</head>
+<body>
+    <div id="grid"></div>
+
+    <script type="text/javascript">
+
+        var bookUrl = '/v1.0/orders/';
+        var remoteDataSource = new kendo.data.DataSource({
+            transport: {
+                read: { url: bookUrl, dataType: "json" },
+                create: { url: bookUrl, dataType: "json", type: "POST", data: dateFormat },
+                update: { url: function (data) { return bookUrl + data.Id; }, dataType: "json", type: "PUT", data: dateFormat },
+                destroy: { url: function (data) { return bookUrl + data.Id; }, dataType: "json", type: "DELETE" },
+                parameterMap: function (data, type) { return kendo.stringify(data); }
+            },
+            aggregate: [{ field: "oSum", aggregate: "sum" }],
+            pageSize: 50,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id: { editable: false, nullable: true },
+                        oBuyer: { validation: { required: true } },
+                        oSum: { type: "number", validation: { required: true, min: 1}, defaultValue: 1 },
+                        oCount: {  type: "number", validation: { required: true, min: 1}, defaultValue: 1 },
+                        sellTime: { type: "date", defaultValue: new Date() }
+                    }
+                }
+            }
+        });
+
+        //格式化数据为提交前做合法化数据准备（create,edit）均用到
+        function dateFormat(data) {
+            data.sellTime = kendo.toString(data.sellTime, "yyyy-MM-ddTHH:mm:ss");
+            return data;
+        }
+
+        //function authorDropDownEditor(container, options) {
+        //    //text-field为外健表要显示的字段，value-field为外健表与主表绑定字段
+        //    $('<input required data-text-field="Name" data-value-field="Id" data-bind="value:' + options.field + '"/>')
+        //        .appendTo(container)
+        //        .kendoDropDownList({
+        //            autoBind: true,
+        //            dataSource: {
+        //                transport: {
+        //                    read: "/api/Author/"
+        //                }
+        //            },
+        //        });
+        //}
+
+
+        var grid = $('#grid').kendoGrid({
+            dataSource: remoteDataSource,
+            toolbar: [{ name: "create", text: "Create new order" }],
+            editable: "popup",
+            sortable: { mode: "single", allowUnsort: true },
+            columnMenu: true,
+            pageable: true,
+            scrollable: false,
+            filterable: { extra: false, operators: { string: { contains: "Contains", startswith: "Starts with" } } },
+            selectable: "multiple row",
+            columns: [
+                    { field: "oBuyer", title: "oBuyer" },
+                    { field: "oCount", title: "oCount", format: "{0:0}" },
+                    {  field: "oSum",  title: "oSum",  format: "{0:c}",   footerTemplate: "￥#=sum# "  },
+                    {  field: "sellTime",  title: "sellTime",  format: "{0: yyyy-MM-dd}"  },
+                    { command: ["edit", "destroy"] }
+            ]
+        });
+    </script>
+</body>
+</html>
