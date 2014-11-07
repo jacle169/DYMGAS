@@ -564,6 +564,7 @@
     <Content Include="js\kendo.window.min.js.map" />
     <Content Include="styles\images\kendoui.ttf" />
     <Content Include="styles\images\kendoui.woff" />
+    <None Include="Properties\PublishProfiles\out1.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -740,7 +741,9 @@
     <Content Include="styles\Uniform\slider-v.gif" />
     <Content Include="styles\Uniform\sprite.png" />
     <Content Include="styles\Uniform\sprite_2x.png" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataMG\DataDV.cs" />
